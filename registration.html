@@ -420,6 +420,103 @@
             </div>
         </div>
     </footer>
+<script type="module">
+  // Import Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+  // 🔥 Your Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyADz9Kw7QEpYeMJhg7dSENYC2JYKG1hQl8",
+    authDomain: "safeindia-67366.firebaseapp.com",
+    projectId: "safeindia-67366",
+    storageBucket: "safeindia-67366.appspot.com",
+    messagingSenderId: "392807213757",
+    appId: "1:392807213757:web:3525dc400c9806aad1e5d4",
+    measurementId: "G-ML8HGPCC76"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  // 📸 Upload Image Handling
+  const imageUpload = document.getElementById('imageUpload');
+  const uploadArea = document.getElementById('uploadArea');
+  let uploadedFiles = [];
+
+  uploadArea.addEventListener('click', () => imageUpload.click());
+
+  imageUpload.addEventListener('change', (e) => {
+    uploadedFiles = Array.from(e.target.files);
+    alert(uploadedFiles.length + " image(s) ready to upload.");
+  });
+
+  // 🧾 Handle Form Submit
+  const registrationForm = document.getElementById('registrationForm');
+  const submitBtn = document.querySelector('.btn-primary');
+
+  submitBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const dob = document.getElementById('dob').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const consent = document.getElementById('consentCheck').checked;
+    const terms = document.getElementById('termsCheck').checked;
+
+    if (!consent || !terms) {
+      alert("⚠️ Please accept the terms and consent to continue.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("❌ Passwords do not match.");
+      return;
+    }
+
+    try {
+      // 1️⃣ Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2️⃣ Upload images to Firebase Storage
+      const imageUrls = [];
+      for (const file of uploadedFiles) {
+        const imageRef = ref(storage, `user_uploads/${user.uid}/${file.name}`);
+        await uploadBytes(imageRef, file);
+        const downloadURL = await getDownloadURL(imageRef);
+        imageUrls.push(downloadURL);
+      }
+
+      // 3️⃣ Store user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        fullName,
+        email,
+        phone,
+        dob,
+        imageUrls,
+        consent,
+        terms,
+        timestamp: new Date().toISOString()
+      });
+
+      alert(`✅ Welcome ${fullName}! Your registration is complete.`);
+      window.location.href = "signin.html";
+
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Error: " + error.message);
+    }
+  });
+</script>
 
     <script>
         // Script to handle the upload area functionality
@@ -473,4 +570,5 @@
         });
     </script>
 </body>
+
 </html>
