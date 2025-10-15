@@ -1,0 +1,213 @@
+<!-- index.html - Home/Main Page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe India - Safety Information Portal</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Safe India</h1>
+            <p>Your comprehensive safety resource</p>
+        </div>
+    </header>
+
+    <div class="nav-container">
+        <nav>
+            <a href="index.html" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                Safe India
+            </a>
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feature.html">Features</a></li>
+                <li><a href="emergency.html">Emergency Contacts</a></li>
+                <li><a href="safety-tips.html">Safety Tips</a></li>
+                <li><a href="safety-map.html">Safety Map</a></li>
+                <li><a href="protection.html">Protection</a></li>
+                <li><a href="signin.html">Signin/signup</a></li>
+            </ul>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Empowering Safety Across India</h1>
+            <p>Access critical safety information, emergency contacts, and resources to keep yourself and your loved ones safe anywhere in India.</p>
+            <div>
+                <a href="emergency.html" class="cta-button">Emergency Contacts</a>
+                <a href="#" class="cta-button secondary-button" id="shareLocationBtn">Share Location for Alerts</a>
+            </div>
+            <div id="locationStatus"></div>
+        </div>
+    </section>
+
+    <div class="alert-banner" id="alertBanner">
+        <span class="close-alert" onclick="closeAlert()">&times;</span>
+        <strong>Safety Alert!</strong> This is a demonstration alert. In a real application, emergency alerts for your area would appear here.
+    </div>
+
+    <!-- Features Section Highlight -->
+    <section class="features-highlight">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Key Features</h2>
+                <p>Tools designed to keep you safe</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Emergency Calling</h3>
+                        <p>Quick access to emergency services with one-tap calling.</p>
+                        <a href="feature.html" class="learn-more">Learn More</a>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Safety Map</h3>
+                        <p>Interactive map showing safety scores and emergency services.</p>
+                        <a href="safety-map.html" class="learn-more">Learn More</a>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Safety Alerts</h3>
+                        <p>Real-time alerts about safety concerns in your area.</p>
+                        <a href="feature.html" class="learn-more">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="feature.html" class="cta-button">View All Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Contacts Preview -->
+    <section class="emergency-preview">
+        <div class="container">
+            <div class="section-title">
+                <h2>Emergency Contacts</h2>
+                <p>Quick access to critical numbers</p>
+            </div>
+            <div class="contact-list preview">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Medical Emergency</h4>
+                        <p>108</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Police</h4>
+                        <p>100</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>National Emergency</h4>
+                        <p>112</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="emergency.html" class="cta-button">View All Emergency Contacts</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Safe India -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About Safe India</h2>
+                    <p>Safe India is a comprehensive platform dedicated to promoting safety and security for all citizens across the nation. Our mission is to provide accessible safety information, resources, and tools to help individuals and communities stay prepared for various situations.</p>
+                    <p>We collaborate with emergency services, government agencies, and safety experts to ensure accurate and relevant information is available to everyone, everywhere.</p>
+                    <a href="about.html" class="cta-button">Learn More About Us</a>
+                </div>
+                <div class="about-image">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOXttu87yvsVBckqruHJS0u5mibl_fZuS3rw&s" alt="Safe India Initiative">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Safe India</h4>
+                    <p>Committed to promoting safety and security for all citizens across India.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="feature.html">Features</a></li>
+                        <li><a href="emergency.html">Emergency Contacts</a></li>
+                        <li><a href="safety-tips.html">Safety Tips</a></li>
+                        <li><a href="safety-map.html">Safety Map</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="resources.html">Safety Guides</a></li>
+                        <li><a href="resources.html#services">Emergency Services</a></li>
+                        <li><a href="resources.html#initiatives">Government Initiatives</a></li>
+                        <li><a href="contact.html">Report an Issue</a></li>
+                        <li><a href="faq.html">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Stay Updated</h4>
+                    <p>Subscribe to our newsletter for safety updates.</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Your email address" required>
+                        <button type="submit" class="newsletter-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Safe India. All rights reserved. | <a href="privacy.html" style="color: #aaa;">Privacy Policy</a> | <a href="terms.html" style="color: #aaa;">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
