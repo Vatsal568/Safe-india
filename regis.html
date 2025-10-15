@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | SafeIndia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    // ✅ Firebase SDK import
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+    // ✅ Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyADz9Kw7QEpYeMJhg7dSENYC2JYKG1hQl8",
+      authDomain: "safeindia-67366.firebaseapp.com",
+      projectId: "safeindia-67366",
+      storageBucket: "safeindia-67366.appspot.com",
+      messagingSenderId: "392807213757",
+      appId: "1:392807213757:web:3525dc400c9806aad1e5d4",
+      measurementId: "G-ML8HGPCC76"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ✅ Register Logic
+    window.registerUser = async function (event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+      const msg = document.getElementById("message");
+
+      if (password !== confirm) {
+        msg.innerText = "Passwords do not match!";
+        msg.className = "text-red-500";
+        return;
+      }
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        msg.innerText = "Registration successful 🎉 Redirecting...";
+        msg.className = "text-green-500";
+        setTimeout(() => window.location.href = "signin.html", 1500);
+      } catch (error) {
+        msg.innerText = error.message;
+        msg.className = "text-red-500";
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 text-white text-center">
+    <h1 class="text-3xl font-semibold mb-6">Create Account</h1>
+    <form onsubmit="registerUser(event)" class="flex flex-col gap-4">
+      <input id="email" type="email" placeholder="Email" required class="p-3 rounded-lg bg-white/20 placeholder-gray-200 outline-none focus:ring-2 focus:ring-white">
+      <input id="password" type="password" placeholder="Password" required class="p-3 rounded-lg bg-white/20 placeholder-gray-200 outline-none focus:ring-2 focus:ring-white">
+      <input id="confirm" type="password" placeholder="Confirm Password" required class="p-3 rounded-lg bg-white/20 placeholder-gray-200 outline-none focus:ring-2 focus:ring-white">
+      <button type="submit" class="mt-2 bg-white text-indigo-700 font-bold py-2 rounded-lg hover:bg-indigo-100 transition">Register</button>
+    </form>
+    <p id="message" class="mt-4"></p>
+    <p class="mt-6 text-sm">Already have an account? <a href="signin.html" class="underline text-yellow-300">Sign in</a></p>
+  </div>
+</body>
+</html>
