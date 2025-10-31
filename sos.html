@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS Alert</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #000000, #5a0000);
+      color: white;
+      text-align: center;
+      padding-top: 120px;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1em;
+      color: #ccc;
+      margin-bottom: 25px;
+    }
+    button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 15px 60px;
+      font-size: 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 20px red;
+    }
+    button:hover {
+      background: darkred;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚨 SOS Emergency Alert</h1>
+  <p>Click the button to send SOS alert with your live location.</p>
+  <button onclick="sendSOS()">SEND SOS</button>
+
+  <script>
+    function sendSOS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const locationLink = `https://www.google.com/maps?q=${lat},${lon}`;
+
+          // 🔹 Fixed message with 3 contact numbers mentioned
+          const message = `🚨 *SOS ALERT!* 🚨\nI need help urgently!\n\nMy live location: ${locationLink}\n\nPlease contact any of these numbers:\n📞 +91 8849101387\n📞 +91 7984327345\n📞 +91 9558347345`;
+
+          // 🔹 Only one WhatsApp number where the message will be sent
+          const singleNumber = "918849101387"; // <-- Change this to your main SOS receiver
+
+          const url = `https://wa.me/${singleNumber}?text=${encodeURIComponent(message)}`;
+          window.open(url, "_blank");
+
+          alert("✅ SOS message opened on WhatsApp! Tap 'Send' to deliver the alert.");
+        }, 
+        error => {
+          alert("⚠️ Please enable GPS/location permission and try again.");
+        });
+      } else {
+        alert("❌ Your device doesn't support GPS location.");
+      }
+    }
+  </script>
+
+</body>
+</html>
