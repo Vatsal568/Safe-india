@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Uploaded Images | Safe India</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(to right, #1a2a6c, #b21f1f, #fdbb2d);
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #1a2a6c;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    .login-form input {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .login-form button {
+      padding: 0.8rem;
+      font-size: 1rem;
+      background: #1a2a6c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .login-form button:hover {
+      background: #151f4f;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .image-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background: #fafafa;
+    }
+    .image-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      color: #b21f1f;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .logout-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #b21f1f;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      float: right;
+    }
+    #dashboard {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1><i class="fas fa-photo-video"></i> Manage Uploaded Images</h1>
+  </header>
+
+  <div class="container">
+    <!-- Login Section -->
+    <section id="loginSection">
+      <h2>Sign In to Manage Your Uploads</h2>
+      <form id="loginForm" class="login-form">
+        <input type="email" id="loginEmail" placeholder="Email address" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <button type="submit">Sign In</button>
+      </form>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard">
+      <h2>Your Uploaded Images</h2>
+      <p style="text-align:center; color:#555;">View and manage your uploaded photos below.</p>
+      <div id="imageGrid" class="image-grid"></div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </section>
+  </div>
+
+  <!-- Firebase integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      updateDoc 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADz9Kw7QEpYeMJhg7dSENYC2JYKG1hQl8",
+      authDomain: "safeindia-67366.firebaseapp.com",
+      projectId: "safeindia-67366",
+      storageBucket: "safeindia-67366.appspot.com",
+      messagingSenderId: "392807213757",
+      appId: "1:392807213757:web:3525dc400c9806aad1e5d4",
+      measurementId: "G-ML8HGPCC76"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginSection = document.getElementById("loginSection");
+    const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const imageGrid = document.getElementById("imageGrid");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Check user auth state
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        loginSection.style.display = "none";
+        dashboard.style.display = "block";
+        await loadUserImages(user.uid);
+      } else {
+        loginSection.style.display = "block";
+        dashboard.style.display = "none";
+      }
+    });
+
+    // Sign in user
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert("⚠️ " + err.message);
+      }
+    });
+
+    // Load user images
+    async function loadUserImages(uid) {
+      const userRef = doc(db, "users", uid);
+      const snapshot = await getDoc(userRef);
+      imageGrid.innerHTML = "<p style='text-align:center;color:#777;'>Loading...</p>";
+
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const images = data.imageUrls || [];
+
+        if (images.length === 0) {
+          imageGrid.innerHTML = "<p style='text-align:center;color:#777;'>No images uploaded yet.</p>";
+          return;
+        }
+
+        imageGrid.innerHTML = "";
+        images.forEach((url, index) => {
+          const card = document.createElement("div");
+          card.classList.add("image-card");
+          card.innerHTML = `
+            <img src="${url}" alt="Uploaded Image ${index}" />
+            <button class="delete-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+          `;
+          imageGrid.appendChild(card);
+        });
+
+        // Handle delete
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const index = e.currentTarget.dataset.index;
+            if (!confirm("Delete this image?")) return;
+
+            const updated = images.filter((_, i) => i != index);
+            await updateDoc(userRef, { imageUrls: updated });
+            alert("🗑️ Image deleted!");
+            loadUserImages(uid);
+          });
+        });
+      } else {
+        imageGrid.innerHTML = "<p style='text-align:center;color:#777;'>No user data found.</p>";
+      }
+    }
+
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      alert("Signed out successfully.");
+    });
+  </script>
+</body>
+</html>
