@@ -421,13 +421,10 @@
         </div>
     </footer>
 <script type="module">
-  // Import Firebase SDKs
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
   import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-  // 🔥 Your Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyADz9Kw7QEpYeMJhg7dSENYC2JYKG1hQl8",
     authDomain: "safeindia-67366.firebaseapp.com",
@@ -438,85 +435,113 @@
     measurementId: "G-ML8HGPCC76"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const storage = getStorage(app);
 
-  // 📸 Upload Image Handling
-  const imageUpload = document.getElementById('imageUpload');
-  const uploadArea = document.getElementById('uploadArea');
+  const CLOUD_NAME = "dyee3klha";
+  const UPLOAD_PRESET = "safeindia_unsigned";
+
+  const uploadArea = document.getElementById("uploadArea");
+  const imageUpload = document.getElementById("imageUpload");
+  const uploadedImages = document.getElementById("uploadedImages");
   let uploadedFiles = [];
 
-  uploadArea.addEventListener('click', () => imageUpload.click());
+  uploadArea.addEventListener("click", () => imageUpload.click());
 
-  imageUpload.addEventListener('change', (e) => {
+  imageUpload.addEventListener("change", (e) => {
     uploadedFiles = Array.from(e.target.files);
-    alert(uploadedFiles.length + " image(s) ready to upload.");
+    uploadedImages.innerHTML = "";
+    uploadedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const div = document.createElement("div");
+        div.classList.add("image-preview");
+        div.innerHTML = `<img src="${ev.target.result}" alt="">`;
+        uploadedImages.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
   });
 
-  // 🧾 Handle Form Submit
-  const registrationForm = document.getElementById('registrationForm');
-  const submitBtn = document.querySelector('.btn-primary');
+  const submitBtn = document.querySelector(".btn-primary");
 
-  submitBtn.addEventListener('click', async (e) => {
+  submitBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const dob = document.getElementById('dob').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    const consent = document.getElementById('consentCheck').checked;
-    const terms = document.getElementById('termsCheck').checked;
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const dob = document.getElementById("dob").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const consent = document.getElementById("consentCheck").checked;
+    const terms = document.getElementById("termsCheck").checked;
 
-    if (!consent || !terms) {
-      alert("⚠️ Please accept the terms and consent to continue.");
-      return;
-    }
+    if (!consent || !terms) return alert("⚠️ Please accept terms and consent!");
+    if (password !== confirmPassword) return alert("❌ Passwords do not match!");
+    if (uploadedFiles.length < 1) return alert("📸 Please upload at least one image!");
 
-    if (password !== confirmPassword) {
-      alert("❌ Passwords do not match.");
-      return;
-    }
+    submitBtn.textContent = "Registering... ⏳";
+    submitBtn.disabled = true;
 
     try {
-      // 1️⃣ Create user in Firebase Auth
+      // 1️⃣ Firebase Auth create
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2️⃣ Upload images to Firebase Storage
+      // 2️⃣ Upload to Cloudinary
       const imageUrls = [];
       for (const file of uploadedFiles) {
-        const imageRef = ref(storage, `user_uploads/${user.uid}/${file.name}`);
-        await uploadBytes(imageRef, file);
-        const downloadURL = await getDownloadURL(imageRef);
-        imageUrls.push(downloadURL);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", UPLOAD_PRESET);
+
+        console.log("⬆️ Uploading:", file.name);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        console.log("📤 Cloudinary response:", data);
+
+        if (data.secure_url) {
+          imageUrls.push(data.secure_url);
+        } else {
+          alert("❌ Cloudinary upload failed. Check console logs.");
+        }
       }
 
-      // 3️⃣ Store user data in Firestore
+      // 3️⃣ Firestore save
       await setDoc(doc(db, "users", user.uid), {
         fullName,
         email,
         phone,
         dob,
-        imageUrls,
         consent,
         terms,
-        timestamp: new Date().toISOString()
+        imageUrls,
+        createdAt: new Date().toISOString(),
       });
 
-      alert(`✅ Welcome ${fullName}! Your registration is complete.`);
-      window.location.href = "signin.html";
-
-    } catch (error) {
-      console.error(error);
-      alert("⚠️ Error: " + error.message);
+      alert(`✅ Registration successful! ${imageUrls.length} image(s) uploaded.`);
+      console.log("✅ Redirecting to manage page...");
+      window.location.href = "manage-uploads.html";
+    } catch (err) {
+      console.error("❌ Error:", err);
+      alert("❌ " + err.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Continue to Verification";
     }
   });
 </script>
+
+
+
+
 
     <script>
         // Script to handle the upload area functionality
