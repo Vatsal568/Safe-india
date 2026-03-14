@@ -148,6 +148,11 @@
                     </ul>
                     <a href="#" class="cta-button">Learn How to Use SOS</a>
                 </div>
+                <button id="sosCameraBtn" class="cta-button">
+Activate SOS Camera
+</button>
+
+<video id="cameraPreview" autoplay playsinline style="width:100%;max-width:400px;margin-top:20px;"></video>
             </div>
         </div>
     </section>
@@ -273,5 +278,49 @@
     </footer>
 
     <script src="js/main.js"></script>
+
+    <script>
+let clickCount = 0;
+let clickTimer;
+
+const btn = document.getElementById("sosCameraBtn");
+const video = document.getElementById("cameraPreview");
+
+btn.addEventListener("click", () => {
+    clickCount++;
+
+    clearTimeout(clickTimer);
+
+    clickTimer = setTimeout(() => {
+
+        if(clickCount === 2){
+            openCamera("user"); // front camera
+        }
+
+        if(clickCount === 3){
+            openCamera("environment"); // back camera
+        }
+
+        clickCount = 0;
+
+    }, 400);
+});
+
+
+async function openCamera(mode){
+    try{
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: mode },
+            audio:false
+        });
+
+        video.srcObject = stream;
+
+    }catch(err){
+        alert("Camera access denied or not supported");
+        console.error(err);
+    }
+}
+</script>
 </body>
 </html>
