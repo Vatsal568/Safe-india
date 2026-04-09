@@ -158,6 +158,91 @@
         </div>
     </section>
 
+    <!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+// Firebase Config (tera wala)
+const firebaseConfig = {
+  apiKey: "AIzaSyDqVAC3H7gQQTiYQAaH85HI6bhs920J4ko",
+  authDomain: "safe-india-8f9d8.firebaseapp.com",
+  databaseURL: "https://safe-india-8f9d8-default-rtdb.firebaseio.com",
+  projectId: "safe-india-8f9d8",
+  storageBucket: "safe-india-8f9d8.appspot.com",
+  messagingSenderId: "365647488533",
+  appId: "1:365647488533:web:a1e13d99a89847e612501c"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
+// ================== SOS SYSTEM ==================
+
+const alertBanner = document.getElementById("alertBanner");
+
+// SOS Trigger (location button ko use kar rahe demo ke liye)
+const sosBtn = document.getElementById("shareLocationBtn");
+
+sosBtn.addEventListener("click", async () => {
+
+    // Camera open
+    try{
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        
+        let video = document.createElement("video");
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.width = "300px";
+        video.srcObject = stream;
+
+        document.body.appendChild(video);
+
+    }catch(err){
+        alert("Camera permission denied");
+    }
+
+    // Firebase pe SOS ON
+    db.ref("sos").set({
+        active: true,
+        time: Date.now()
+    });
+
+});
+
+
+// ================== LISTENER (Dusre Device ke liye) ==================
+
+db.ref("sos").on("value", async (snapshot) => {
+    const data = snapshot.val();
+
+    if(data && data.active){
+
+        // Alert show
+        alertBanner.style.display = "block";
+        alertBanner.innerHTML = "🚨 SOS Activated by teammate!";
+
+        // Camera auto open (demo)
+        try{
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+            let video = document.createElement("video");
+            video.autoplay = true;
+            video.playsInline = true;
+            video.style.width = "300px";
+            video.srcObject = stream;
+
+            document.body.appendChild(video);
+
+        }catch(err){
+            console.log("Camera blocked");
+        }
+    }
+});
+</script>
+
     <footer>
         <div class="container">
             <div class="footer-content">
