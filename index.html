@@ -215,7 +215,7 @@ sosBtn.addEventListener("click", async () => {
 
 // ================== LISTENER (Dusre Device ke liye) ==================
 
-db.ref("sos").on("value", async (snapshot) => {
+/* db.ref("sos").on("value", async (snapshot) => {
     const data = snapshot.val();
 
     if(data && data.active){
@@ -240,7 +240,7 @@ db.ref("sos").on("value", async (snapshot) => {
             console.log("Camera blocked");
         }
     }
-});
+}); */
 </script>
 
     <footer>
@@ -293,7 +293,7 @@ db.ref("sos").on("value", async (snapshot) => {
         </div>
     </footer>
 
-   // <script src="js/main.js"></script> 
+   <script src="js/main.js"></script> 
 </body>
 
 </html>
